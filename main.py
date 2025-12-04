@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request, Response
 from openai import OpenAI
 import requests
 import os
-
 app = FastAPI()
 
 # Load from environment variables (Railway/Vercel/Render will have these set)
@@ -11,20 +10,15 @@ ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN", "truman_cs_2018_capstone")
 
 # Choose your LLM backend here
-USE_GROQ = True  # Set False if you have Grok-4 API key
+GROQ_KEY = os.getenv("GROQ_API_KEY")
+if not GROQ_KEY:
+    raise Exception("ERROR: GROQ_API_KEY is missing! Add it in Railway Variables.")
 
-if USE_GROQ:
-    client = OpenAI(
-        api_key=os.getenv("GROQ_API_KEY"),
-        base_url="https://api.groq.com/openai/v1"
-    )
-    MODEL = "llama-3.1-70b-versatile"
-else:
-    client = OpenAI(
-        api_key=os.getenv("GROK_API_KEY"),
-        base_url="https://api.x.ai/v1"
-    )
-    MODEL = "grok-4"
+client = OpenAI(
+    api_key=GROQ_KEY,
+    base_url="https://api.groq.com/openai/v1"
+)
+MODEL = "llama-3.1-70b-versatile"
 
 SYSTEM_PROMPT = """
 You are Nepal Europe Job Assistant. 
